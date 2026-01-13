@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: flight-mongo-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_dev_data:/data/db
+
+  backend:
+    build: ./server
+    container_name: flight-backend-dev
+    command: npm run dev
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/flight_dev
+      - JWT_SECRET=dev_secret_key
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./client
+    container_name: flight-frontend-dev
+    command: npm run dev
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+
+volumes:
+  mongo_dev_data:

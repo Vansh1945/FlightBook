@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
+  const API = import.meta.env.VITE_BACKEND_URL;
 
 
 
