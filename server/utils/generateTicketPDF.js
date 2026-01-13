@@ -157,13 +157,6 @@ const generateTicketPDF = (pnr, passengerName, flight, currentPrice, totalPrice,
       
       yPosition = tableY + 120;
 
-      // IMPORTANT INFORMATION
-      doc.fontSize(12).font('Helvetica-Bold')
-        .fillColor('#dc2626')
-        .text('IMPORTANT INFORMATION:', 50, yPosition);
-      
-      yPosition += 20;
-      
       // FOOTER
       doc.rect(0, yPosition, 595.28, 60).fill('#1e293b');
       
