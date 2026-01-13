@@ -77,14 +77,14 @@ const Success = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Airline</p>
                 <p className="font-medium text-gray-800">
-                  {booking.flightId?.airline || "N/A"}
+                  {booking.flight?.airline || "N/A"}
                 </p>
               </div>
-              
+
               <div>
                 <p className="text-sm text-gray-600 mb-1">Route</p>
                 <p className="font-medium text-gray-800">
-                  {booking.flightId?.departure_city || "N/A"} → {booking.flightId?.arrival_city || "N/A"}
+                  {booking.flight?.route || "N/A"}
                 </p>
               </div>
               
@@ -100,17 +100,30 @@ const Success = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Booking Date</p>
                 <p className="font-medium text-gray-800">
-                  {new Date(booking.bookedAt).toLocaleDateString()}
+                  {new Date(booking.booking_date_time).toLocaleDateString()}
                 </p>
               </div>
-              
+
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Base Price</p>
+                <p className="text-lg font-semibold text-blue-600">
+                  ₹{booking.flight?.base_price || "N/A"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Current Price</p>
+                <p className="text-lg font-semibold text-blue-600">
+                  ₹{booking.current_price || "N/A"}
+                </p>
+              </div>
+
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                 <p className="text-xl font-bold text-green-600">
-                  ₹{booking.pricePaid || "N/A"}
+                  ₹{booking.final_price || "N/A"}
                 </p>
               </div>
-              
               <div>
                 <p className="text-sm text-gray-600 mb-1">Status</p>
                 <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">

@@ -27,6 +27,14 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  base_price: {
+    type: Number,
+    required: true
+  },
+  current_price: {
+    type: Number,
+    required: true
+  },
   final_price: {
     type: Number,
     required: true

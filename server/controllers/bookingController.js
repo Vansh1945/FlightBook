@@ -2,8 +2,10 @@ import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import Flight from '../models/Flight.js';
 import Wallet from '../models/Wallet.js';
+import PricingAttempts from '../models/PricingAttempts.js';
 import { v4 as uuidv4 } from 'uuid';
 import { generateTicketPDF } from '../utils/generateTicketPDF.js';
+import { calculateSurgePrice } from '../utils/surgePricing.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -26,9 +28,13 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'No seats available' });
     }
 
-    // Dynamic pricing logic
+    // Calculate current price with surge pricing
+    const currentPrice = calculateSurgePrice(flight.base_price, flight.seatsAvailable);
+    const surgeIncrease = currentPrice - flight.base_price;
+
+    // Dynamic pricing logic based on current price
     let attemptRecord = await PricingAttempts.findOne({ flightId, userId });
-    let totalPrice = flight.base_price;
+    let totalPrice = currentPrice;
 
     if (attemptRecord) {
       const now = new Date();
@@ -56,6 +62,11 @@ const createBooking = async (req, res) => {
 
     await attemptRecord.save();
 
+    // Increment global surge attempts for the flight
+    flight.surge_attempts += 1;
+    flight.last_attempt_time = new Date();
+    await flight.save();
+
     // Check wallet balance
     const wallet = await Wallet.findOne({ userId });
     if (!wallet || wallet.balance < totalPrice) {
@@ -77,6 +88,8 @@ const createBooking = async (req, res) => {
       flight_id: flight.flight_id,
       airline: flight.airline,
       route: `${flight.departure_city} → ${flight.arrival_city}`,
+      base_price: flight.base_price,
+      current_price: currentPrice,
       final_price: totalPrice,
       pnr
     });
@@ -94,7 +107,7 @@ const createBooking = async (req, res) => {
 
     // Generate PDF ticket
     const pdfPath = path.join(__dirname, '..', 'tickets', `Ticket_${pnr}.pdf`);
-    await generateTicketPDF(pnr, passengerName, flight, totalPrice, booking.booking_date_time, pdfPath);
+    await generateTicketPDF(pnr, passengerName, flight, currentPrice, totalPrice, booking.booking_date_time, pdfPath);
 
     res.status(201).json({
       message: 'Booking successful',
@@ -105,8 +118,10 @@ const createBooking = async (req, res) => {
         flight: {
           flight_id: flight.flight_id,
           airline: flight.airline,
-          route: `${flight.departure_city} → ${flight.arrival_city}`
+          route: `${flight.departure_city} → ${flight.arrival_city}`,
+          base_price: flight.base_price
         },
+        current_price: currentPrice,
         final_price: totalPrice,
         booking_date_time: booking.booking_date_time
       }
