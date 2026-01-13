@@ -164,33 +164,12 @@ const generateTicketPDF = (pnr, passengerName, flight, currentPrice, totalPrice,
       
       yPosition += 20;
       
-      const instructions = [
-        '• Please arrive at the airport 3 hours before departure',
-        '• Carry a valid government photo ID',
-        '• E-ticket copy must be presented at check-in',
-        '• Check-in opens 48 hours before departure',
-        '• For any changes, contact customer support'
-      ];
-      
-      instructions.forEach((instruction, index) => {
-        doc.fontSize(10).font('Helvetica')
-          .fillColor('#4b5563')
-          .text(instruction, 60, yPosition + (index * 15));
-      });
-
-      yPosition += 90;
-
       // FOOTER
       doc.rect(0, yPosition, 595.28, 60).fill('#1e293b');
       
       doc.fontSize(10).font('Helvetica')
         .fillColor('#94a3b8')
         .text('Thank you for choosing SkyJet Airways', { align: 'center', y: yPosition + 20 });
-      
-      doc.fontSize(9).font('Helvetica')
-        .fillColor('#64748b')
-        .text('For assistance: support@skyjet.com | Call: 1800-123-4567', 
-              { align: 'center', y: yPosition + 40 });
 
       doc.end();
 
